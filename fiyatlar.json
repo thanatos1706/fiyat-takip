@@ -1,0 +1,24 @@
+{
+  "kayitlar": [
+    {
+      "tarih": "2026-06-12T22:56:51Z",
+      "fiyatlar": {
+        "oppo": {
+          "fiyat": 79919,
+          "magaza": "MediaMarkt",
+          "link": "https://www.mediamarkt.com.tr/tr/product/_oppo-find-x9-pro-16512-gb-akilli-telefon-titanyum-antrasit-1251420.html"
+        },
+        "honor": {
+          "fiyat": 74899,
+          "magaza": "MediaMarkt",
+          "link": "https://www.mediamarkt.com.tr/tr/product/_honor-magic-8-pro-12512gb-akilli-telefon-gun-isigi-sarisi-1251988.html"
+        },
+        "oneplus": {
+          "fiyat": 74999,
+          "magaza": "Hepsiburada",
+          "link": "https://www.hepsiburada.com/oneplus-15-5g-512gb-16gb-ram-oneplus-turkiye-garantili-pm-HBC0000BFFNOC"
+        }
+      }
+    }
+  ]
+}

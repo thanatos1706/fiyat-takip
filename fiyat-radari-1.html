@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0F14">
+<title>Fiyat Radarı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0F14; --panel:#121A23; --panel2:#0F151D; --line:#1E2935;
+    --text:#E8EDF2; --muted:#8A99A8; --amber:#FFB454;
+    --drop:#4ADE80; --rise:#F87171; --flat:#8A99A8;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Inter',system-ui,sans-serif; font-size:15px; line-height:1.5;
+    padding:max(14px,env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom));
+    max-width:560px; margin:0 auto;
+  }
+  .num{font-family:'Space Grotesk',monospace; font-variant-numeric:tabular-nums}
+
+  header{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:6px 2px 14px}
+  header h1{font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; letter-spacing:.2px}
+  header h1 span{color:var(--amber)}
+  #sonGuncelleme{font-size:12px; color:var(--muted); text-align:right}
+
+  /* Karar bandı */
+  #karar{
+    border-radius:var(--radius); padding:14px 16px; margin-bottom:14px;
+    background:var(--panel); border:1px solid var(--line);
+    font-weight:600; font-size:15px; display:flex; gap:10px; align-items:flex-start;
+  }
+  #karar.dustu{border-color:rgba(74,222,128,.45); background:linear-gradient(180deg,rgba(74,222,128,.10),rgba(74,222,128,.03)),var(--panel); color:var(--drop)}
+  #karar.yok{color:var(--muted); font-weight:500}
+  #karar .ikon{font-size:18px; line-height:1.3}
+
+  /* Telefon kartları */
+  .kart{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin-bottom:10px; position:relative; overflow:hidden;
+  }
+  .kart.enucuz{border-color:rgba(255,180,84,.5)}
+  .kart.enucuz::before{
+    content:"EN UCUZ"; position:absolute; top:0; right:0;
+    background:var(--amber); color:#21160a; font-size:10px; font-weight:700; letter-spacing:1px;
+    padding:3px 10px; border-radius:0 var(--radius) 0 10px;
+  }
+  .kart .ust{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .kart h2{font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:500}
+  .fiyat{font-size:28px; font-weight:700; margin-top:2px}
+  .fiyat small{font-size:14px; color:var(--muted); font-weight:400}
+  .alt{display:flex; justify-content:space-between; align-items:center; margin-top:6px; gap:8px; flex-wrap:wrap}
+  .degisim{font-size:13px; font-weight:600}
+  .degisim.d{color:var(--drop)} .degisim.r{color:var(--rise)} .degisim.f{color:var(--flat); font-weight:400}
+  .dip{font-size:12px; color:var(--muted)}
+  .magaza{font-size:13px; color:var(--amber); text-decoration:none; font-weight:500}
+  .magaza:focus-visible{outline:2px solid var(--amber); outline-offset:2px; border-radius:4px}
+
+  /* Grafik */
+  #grafikKutu{background:var(--panel2); border:1px solid var(--line); border-radius:var(--radius); padding:14px 12px 8px; margin:14px 0}
+  #grafikKutu h3{font-size:13px; color:var(--muted); font-weight:500; padding-left:4px}
+  #grafik{width:100%; height:170px; display:block; margin-top:6px}
+  #lejant{display:flex; gap:14px; padding:6px 4px 4px; font-size:12px; color:var(--muted); flex-wrap:wrap}
+  #lejant i{display:inline-block; width:10px; height:3px; border-radius:2px; margin-right:5px; vertical-align:middle}
+
+  /* Butonlar ve durumlar */
+  #taraBtn{
+    display:block; text-align:center; text-decoration:none;
+    width:100%; padding:15px; border:none; border-radius:var(--radius);
+    background:var(--amber); color:#21160a; font-family:'Space Grotesk',sans-serif;
+    font-size:16px; font-weight:700; cursor:pointer; margin-top:4px;
+  }
+  #taraBtn:focus-visible{outline:3px solid #fff; outline-offset:2px}
+  #yenileBtn{
+    display:block; width:100%; padding:13px; margin-top:8px; cursor:pointer;
+    background:transparent; border:1px solid var(--line); border-radius:var(--radius);
+    color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:500;
+  }
+  #yenileBtn:disabled{opacity:.55}
+  #yenileBtn:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+  #durum{font-size:13px; color:var(--muted); text-align:center; margin-top:10px; min-height:20px}
+  #durum.hata{color:var(--rise)}
+  .bos{
+    background:var(--panel); border:1px dashed var(--line); border-radius:var(--radius);
+    padding:22px 18px; text-align:center; color:var(--muted); font-size:14px; margin-bottom:14px;
+  }
+  .bos b{color:var(--text)}
+  footer{margin-top:18px; text-align:center; font-size:11px; color:#4A5866}
+
+  @keyframes nabiz{0%,100%{opacity:1}50%{opacity:.45}}
+  .yukleniyor{animation:nabiz 1.2s ease-in-out infinite}
+  @media (prefers-reduced-motion: reduce){.yukleniyor{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Fiyat <span>Radarı</span></h1>
+  <div id="sonGuncelleme" class="num"></div>
+</header>
+
+<div id="icerik"><div class="bos yukleniyor">Fiyatlar yükleniyor…</div></div>
+
+<a id="taraBtn" href="https://claude.ai/code" target="_blank" rel="noopener">Şimdi tarat → Run now</a>
+<button id="yenileBtn" type="button">Fiyatları yenile</button>
+<div id="durum" role="status">Anlık tarama: Routines → Fiyat Takip → Run now. Bitince buradan yenile.</div>
+
+<footer>Veri: github.com/thanatos1706/fiyat-takip · Oppo Find X9 Pro · Honor Magic 8 Pro · OnePlus 15</footer>
+
+<script>
+const REPO_URL = "https://raw.githubusercontent.com/thanatos1706/fiyat-takip/main/fiyatlar.json";
+const TELEFONLAR = {
+  oppo:   {ad:"Oppo Find X9 Pro",  renk:"#7DD3FC"},
+  honor:  {ad:"Honor Magic 8 Pro", renk:"#C4B5FD"},
+  oneplus:{ad:"OnePlus 15",        renk:"#FFB454"}
+};
+const tl = n => "₺" + Number(n).toLocaleString("tr-TR");
+let kayitlar = []; // {tarih, fiyatlar:{oppo:{fiyat,magaza,link},...}, kaynak}
+
+/* ---------- Veri yükleme ---------- */
+async function depoOku(){
+  try{
+    const r = await fetch(REPO_URL + "?t=" + Date.now(), {cache:"no-store"});
+    if(!r.ok) return [];
+    const j = await r.json();
+    return Array.isArray(j.kayitlar) ? j.kayitlar : [];
+  }catch(e){ return []; }
+}
+async function yerelOku(){
+  try{
+    if(!window.storage) return [];
+    const r = await window.storage.get("manuel-kayitlar");
+    return r ? JSON.parse(r.value) : [];
+  }catch(e){ return []; }
+}
+async function yerelYaz(liste){
+  try{ if(window.storage) await window.storage.set("manuel-kayitlar", JSON.stringify(liste.slice(-60))); }catch(e){}
+}
+async function yukle(){
+  const [depo, yerel] = await Promise.all([depoOku(), yerelOku()]);
+  kayitlar = [...depo, ...yerel]
+    .filter(k => k && k.tarih && k.fiyatlar)
+    .sort((a,b) => new Date(a.tarih) - new Date(b.tarih));
+  ciz();
+}
+
+/* ---------- Arayüz ---------- */
+function ciz(){
+  const kutu = document.getElementById("icerik");
+  const sonEl = document.getElementById("sonGuncelleme");
+
+  if(kayitlar.length === 0){
+    sonEl.textContent = "";
+    kutu.innerHTML = `<div class="bos"><b>Henüz veri yok.</b><br><br>
+      Rutin ilk kez çalıştığında fiyatlar burada görünecek.<br>
+      İstersen <b>Şimdi tara</b> ile ilk kontrolü hemen yap.</div>`;
+    return;
+  }
+
+  const son = kayitlar[kayitlar.length-1];
+  const onceki = kayitlar.length > 1 ? kayitlar[kayitlar.length-2] : null;
+  sonEl.textContent = "Son kontrol: " + new Date(son.tarih).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+
+  // Karar bandı
+  const dusenler = [];
+  if(onceki){
+    for(const k in TELEFONLAR){
+      const s = son.fiyatlar[k]?.fiyat, o = onceki.fiyatlar?.[k]?.fiyat;
+      if(s && o && s < o) dusenler.push(`${TELEFONLAR[k].ad} ${tl(o-s)} düştü`);
+    }
+  }
+  let kararHtml;
+  if(dusenler.length) kararHtml = `<div id="karar" class="dustu"><span class="ikon">📉</span><span>${dusenler.join(" · ")}</span></div>`;
+  else if(onceki)     kararHtml = `<div id="karar" class="yok"><span class="ikon">〰️</span><span>Son kontrolden bu yana düşüş yok.</span></div>`;
+  else                kararHtml = `<div id="karar" class="yok"><span class="ikon">📡</span><span>İlk kayıt alındı. Karşılaştırma bir sonraki kontrolde başlayacak.</span></div>`;
+
+  // En ucuz telefon + kartlar
+  let enUcuzKey = null, enUcuzF = Infinity;
+  for(const k in TELEFONLAR){
+    const f = son.fiyatlar[k]?.fiyat;
+    if(f && f < enUcuzF){ enUcuzF = f; enUcuzKey = k; }
+  }
+
+  let kartlar = "";
+  for(const k in TELEFONLAR){
+    const t = TELEFONLAR[k], g = son.fiyatlar[k];
+    if(!g || !g.fiyat){ kartlar += `<div class="kart"><h2>${t.ad}</h2><div class="dip">Bu kontrolde fiyat bulunamadı.</div></div>`; continue; }
+    const o = onceki?.fiyatlar?.[k]?.fiyat;
+    let deg = `<span class="degisim f">değişim yok</span>`;
+    if(o && g.fiyat < o) deg = `<span class="degisim d">▼ ${tl(o-g.fiyat)} düştü</span>`;
+    else if(o && g.fiyat > o) deg = `<span class="degisim r">▲ ${tl(g.fiyat-o)} arttı</span>`;
+    const dip = Math.min(...kayitlar.map(x=>x.fiyatlar?.[k]?.fiyat).filter(Boolean));
+    const magaza = g.link
+      ? `<a class="magaza" href="${g.link}" target="_blank" rel="noopener">${g.magaza || "Mağazaya git"} ↗</a>`
+      : `<span class="magaza">${g.magaza || ""}</span>`;
+    kartlar += `
+      <div class="kart ${k===enUcuzKey?"enucuz":""}">
+        <div class="ust"><h2>${t.ad}</h2></div>
+        <div class="fiyat num">${tl(g.fiyat)}</div>
+        <div class="alt">${deg}${magaza}</div>
+        <div class="alt"><span class="dip num">Görülen dip: ${tl(dip)}</span></div>
+      </div>`;
+  }
+
+  // Grafik kutusu (2+ kayıt varsa)
+  const grafikHtml = kayitlar.length > 1 ? `
+    <div id="grafikKutu">
+      <h3>Fiyat geçmişi</h3>
+      <canvas id="grafik"></canvas>
+      <div id="lejant">${Object.entries(TELEFONLAR).map(([k,t])=>`<span><i style="background:${t.renk}"></i>${t.ad}</span>`).join("")}</div>
+    </div>` : "";
+
+  kutu.innerHTML = kararHtml + kartlar + grafikHtml;
+  if(kayitlar.length > 1) grafikCiz();
+}
+
+function grafikCiz(){
+  const c = document.getElementById("grafik");
+  if(!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = c.clientWidth, H = c.clientHeight;
+  c.width = W*dpr; c.height = H*dpr;
+  const ctx = c.getContext("2d"); ctx.scale(dpr,dpr);
+
+  const veri = kayitlar.slice(-30);
+  const hepsi = [];
+  for(const k in TELEFONLAR) veri.forEach(x=>{ const f=x.fiyatlar?.[k]?.fiyat; if(f) hepsi.push(f); });
+  if(hepsi.length < 2) return;
+  let min = Math.min(...hepsi), max = Math.max(...hepsi);
+  if(min === max){ min -= 500; max += 500; }
+  const pad = (max-min)*0.12; min -= pad; max += pad;
+
+  const L = 8, R = 8, T = 8, B = 18;
+  const x = i => L + (W-L-R) * (veri.length===1 ? .5 : i/(veri.length-1));
+  const y = f => T + (H-T-B) * (1 - (f-min)/(max-min));
+
+  // yatay kılavuz çizgileri
+  ctx.strokeStyle = "#1E2935"; ctx.lineWidth = 1;
+  for(let i=0;i<3;i++){
+    const gy = T + (H-T-B)*i/2;
+    ctx.beginPath(); ctx.moveTo(L,gy); ctx.lineTo(W-R,gy); ctx.stroke();
+  }
+  // çizgiler
+  for(const k in TELEFONLAR){
+    ctx.strokeStyle = TELEFONLAR[k].renk; ctx.lineWidth = 2; ctx.lineJoin = "round";
+    ctx.beginPath(); let basladi = false;
+    veri.forEach((kayit,i)=>{
+      const f = kayit.fiyatlar?.[k]?.fiyat; if(!f) return;
+      if(!basladi){ ctx.moveTo(x(i),y(f)); basladi = true; } else ctx.lineTo(x(i),y(f));
+    });
+    ctx.stroke();
+    // son nokta
+    for(let i=veri.length-1;i>=0;i--){
+      const f = veri[i].fiyatlar?.[k]?.fiyat;
+      if(f){ ctx.fillStyle = TELEFONLAR[k].renk; ctx.beginPath(); ctx.arc(x(i),y(f),3.5,0,7); ctx.fill(); break; }
+    }
+  }
+  // tarih etiketleri (ilk ve son)
+  ctx.fillStyle = "#5A6B7C"; ctx.font = "10px Inter,sans-serif";
+  const fmt = t => new Date(t).toLocaleDateString("tr-TR",{day:"2-digit",month:"2-digit"});
+  ctx.fillText(fmt(veri[0].tarih), L, H-4);
+  const sonTxt = fmt(veri[veri.length-1].tarih);
+  ctx.fillText(sonTxt, W-R-ctx.measureText(sonTxt).width, H-4);
+}
+
+/* ---------- Yenile ---------- */
+const yenileBtn = document.getElementById("yenileBtn");
+const durum = document.getElementById("durum");
+
+yenileBtn.addEventListener("click", async ()=>{
+  yenileBtn.disabled = true;
+  durum.className = ""; durum.textContent = "Güncel veriler alınıyor…";
+  await yukle();
+  durum.textContent = "Güncellendi ✓ — " + new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+  yenileBtn.disabled = false;
+});
+
+window.addEventListener("resize", ()=>{ if(kayitlar.length>1) grafikCiz(); });
+yukle();
+</script>
+</body>
+</html>

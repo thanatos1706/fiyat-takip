@@ -160,5 +160,25 @@
         }
       }
     }
+    ,{
+      "tarih": "2026-06-20T10:09:03Z",
+      "fiyatlar": {
+        "oppo": {
+          "fiyat": 84999,
+          "magaza": "Teknosa",
+          "link": "https://www.teknosa.com/oppo-find-x9-pro-16512-titanyum-antrasit-akilli-telefon-p-100000060306"
+        },
+        "honor": {
+          "fiyat": 67999,
+          "magaza": "Hepsiburada",
+          "link": "https://www.hepsiburada.com/honor-magic-8-pro-5g-512-gb-12-gb-ram-honor-turkiye-garantili-siyah-pm-HBC0000CATQ5C"
+        },
+        "oneplus": {
+          "fiyat": 73613,
+          "magaza": "Hepsiburada (GSM Tuna, OnePlus Türkiye Garantili)",
+          "link": "https://www.hepsiburada.com/oneplus-15-5g-512gb-16gb-ram-oneplus-turkiye-garantili-pm-HBC0000BFFNOC"
+        }
+      }
+    }
   ]
 }
